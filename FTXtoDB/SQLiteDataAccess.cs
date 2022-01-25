@@ -23,6 +23,7 @@ namespace FTXtoDB
                 $"'{kline.StartTime}', '{kline.Open}', '{kline.Close}', '{kline.High}', '{kline.Low}', '{kline.Volume}')");
         }
 
+
         public static void BulkInsert(IOrderedEnumerable<FTXKline> data, string Ticker)
         {
             using IDbConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -36,7 +37,7 @@ namespace FTXtoDB
                 using (var command = cnn.CreateCommand())
                 {
                     command.CommandText =
-                        $"insert into {tick}(startTime, open, close, high, low, volume) " +
+                        $"insert or ignore into {tick}(startTime, open, close, high, low, volume) " +
                         "values ($startTime, $open, $close, $high, $low, $volume);";
 
                     var startParameter = command.CreateParameter();

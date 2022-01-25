@@ -152,6 +152,41 @@ namespace FTXtoDB
             DateTime startDate = DateTime.UtcNow;
             DateTime endDate = DateTime.UtcNow;
 
+            var progress = new Progress<ProgressReport>();
+            int x = 0;
+            int totalPercent = 0;
+
+            //switch (cbResolutions.SelectedItem)
+            //{
+            //    case ("15s"):
+            //        startDate -
+            //        break;
+            //    case ("1m"):
+
+            //        break;
+            //    case ("5m"):
+
+            //        break;
+            //    case ("15m"):
+
+            //        break;
+            //    case ("1h"):
+
+            //        break;
+            //    case ("4h"):
+
+            //        break;
+            //    case ("1d"):
+
+            //        break;
+            //    case ("1w"):
+
+            //        break;
+            //    case ("1M"):
+
+            //        break;
+            //}
+
             while (run)
             {
                 switch (cbResolutions.SelectedItem)
@@ -216,22 +251,24 @@ namespace FTXtoDB
 
                 if (result.Data.Count() == 0)
                 {
+                    
+                    run = false;
+                    var db = candles.OrderBy(o => o.StartTime);
+                    string name = ticker + cbResolutions.SelectedItem.ToString().ToUpper();
+                    ProcessData(db, name);
+                    labelProgress.Text = "Done!";
+                }
+                else
+                {
+                    progress.PercentComplete = index++ * 100 / totalProcess;
+                    progress.Report(progressReport);
                     labelProgress.Text = "Working...";
-                    var progress = new Progress<ProgressReport>();
                     progress.ProgressChanged += (o, report) => {
                         labelProgress.Text = String.Format($"Processing...{report.PercentComplete}");
                         progressBar1.Value = report.PercentComplete;
                         progressBar1.Update();
                     };
 
-                    run = false;
-                    var db = candles.OrderBy(o => o.StartTime);
-                    string name = ticker + cbResolutions.SelectedItem.ToString().ToUpper();
-                    ProcessData(db, progress, name);
-                    labelProgress.Text = "Done!";
-                }
-                else
-                {
                     IEnumerable<FTXKline> ftxklines = result.Data.OrderByDescending(o => o.StartTime);
                     var c = ftxklines.ToList();
                     candles.AddRange(c);
@@ -239,15 +276,16 @@ namespace FTXtoDB
             }
         }
 
+        //private void UpdateBar(IProgress<ProgressReport> progress)
+        //{
+        //    int index = 1;
+        //    int totalProcess = list.Count();
+        //    var progressReport = new ProgressReport();
+        //}
         
 
-        private void ProcessData(IOrderedEnumerable<FTXKline> list, IProgress<ProgressReport> progress, string ticker)
+        private void ProcessData(IOrderedEnumerable<FTXKline> list, string ticker)
         {
-            int index = 1;
-            int totalProcess = list.Count();
-            var progressReport = new ProgressReport();
-
-            
             BulkInsert(list, ticker);
 
             //return Task.Run(() =>
@@ -265,7 +303,7 @@ namespace FTXtoDB
 
         private async void button2_Click(object sender, EventArgs e)
         {
-            await ParseEverything();
+            ParseEverything();
         }
     }
 }
