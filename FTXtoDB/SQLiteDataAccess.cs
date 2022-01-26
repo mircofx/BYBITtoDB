@@ -29,6 +29,8 @@ namespace FTXtoDB
             using IDbConnection cnn = new SQLiteConnection(LoadConnectionString());
 
             string tick = Ticker.Replace("-", "");
+            
+            var tables = cnn.Execute($"create table if not exists {tick} (startTime STRING, open DECIMAL, close DECIMAL, high DECIMAL, low DECIMAL, volume DECIMAL)");
 
             cnn.Open();
 

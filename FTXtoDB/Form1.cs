@@ -156,36 +156,36 @@ namespace FTXtoDB
             int x = 0;
             int totalPercent = 0;
 
-            //switch (cbResolutions.SelectedItem)
-            //{
-            //    case ("15s"):
-            //        startDate -
-            //        break;
-            //    case ("1m"):
+            switch (cbResolutions.SelectedItem)
+            {
+                case ("15s"):
 
-            //        break;
-            //    case ("5m"):
+                    break;
+                case ("1m"):
 
-            //        break;
-            //    case ("15m"):
+                    break;
+                case ("5m"):
 
-            //        break;
-            //    case ("1h"):
+                    break;
+                case ("15m"):
 
-            //        break;
-            //    case ("4h"):
+                    break;
+                case ("1h"):
 
-            //        break;
-            //    case ("1d"):
+                    break;
+                case ("4h"):
 
-            //        break;
-            //    case ("1w"):
+                    break;
+                case ("1d"):
 
-            //        break;
-            //    case ("1M"):
+                    break;
+                case ("1w"):
 
-            //        break;
-            //}
+                    break;
+                case ("1M"):
+
+                    break;
+            }
 
             while (run)
             {
@@ -260,14 +260,14 @@ namespace FTXtoDB
                 }
                 else
                 {
-                    progress.PercentComplete = index++ * 100 / totalProcess;
-                    progress.Report(progressReport);
+                    //progress.PercentComplete = index++ * 100 / totalProcess;
+                    //progress.Report(progressReport);
                     labelProgress.Text = "Working...";
-                    progress.ProgressChanged += (o, report) => {
-                        labelProgress.Text = String.Format($"Processing...{report.PercentComplete}");
-                        progressBar1.Value = report.PercentComplete;
-                        progressBar1.Update();
-                    };
+                    //progress.ProgressChanged += (o, report) => {
+                    //    labelProgress.Text = String.Format($"Processing...{report.PercentComplete}");
+                    //    progressBar1.Value = report.PercentComplete;
+                    //    progressBar1.Update();
+                    //};
 
                     IEnumerable<FTXKline> ftxklines = result.Data.OrderByDescending(o => o.StartTime);
                     var c = ftxklines.ToList();
