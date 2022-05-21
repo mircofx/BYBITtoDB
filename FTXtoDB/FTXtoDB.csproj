@@ -10,10 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="FTX.Net" Version="0.1.9" />
-    <PackageReference Include="ReaLTaiizor" Version="3.7.8.5" />
+    <PackageReference Include="FTX.Net" Version="1.0.9" />
+    <PackageReference Include="ReaLTaiizor" Version="3.7.8.6" />
     <PackageReference Include="Stub.System.Data.SQLite.Core.NetStandard" Version="1.0.115.5" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="System.Management" Version="6.0.0" />
   </ItemGroup>
 
 </Project>

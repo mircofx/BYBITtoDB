@@ -1,10 +1,11 @@
-using CryptoExchange.Net.Authentication;
-using FTX.Net;
+﻿using CryptoExchange.Net.Authentication;
+using FTX.Net.Clients;
 using FTX.Net.Enums;
 using FTX.Net.Objects;
-using FTX.Net.Objects.Spot;
+using FTX.Net.Objects.Models;
 using System.Data;
 using System.Linq;
+using System.Management;
 using System.Security;
 using static FTXtoDB.SQLiteDataAccess;
 
@@ -12,7 +13,7 @@ namespace FTXtoDB
 {
     public partial class Form1 : Form
     {
-        public static FTXClient client;
+        public static FTXClient? client;
         public static int quantity;
         public Form1()
         {
@@ -20,7 +21,7 @@ namespace FTXtoDB
 
             ResolutionPopulate();
 
-            Tuple<SecureString, SecureString> keys = EncryptCredentials("Y0pKVmOYI1l9TDEiYR_EtI7FexlNUAU20_dBnbcC", "E64JMLW1Ql0sZsZpkpZosBCPCRAdDG09Jz0SsZCr");
+            Tuple<SecureString, SecureString> keys = EncryptCredentials("eHSSX-fZJQSv4bLX53tQUAsLrCJl-9Zpo87RKSS9", "L7Xe7q5mf5W0Wj8DAdQtiAEhbDvrq3ZsY-4OAIXB");
 
             client = new(new FTXClientOptions()
             {
@@ -37,7 +38,7 @@ namespace FTXtoDB
 
         public void GetListInstruments(FTXClient client)
         {
-            var list = client.GetFuturesAsync().Result.Data;
+            var list = client.TradeApi.ExchangeData.GetFuturesAsync().Result.Data;
 
             List<string> tickers = list.Select(s => s.Name).ToList();
 
@@ -70,68 +71,17 @@ namespace FTXtoDB
             return new Tuple<SecureString, SecureString>(secureKey, secureSecret);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnParseDate_Click(object sender, EventArgs e)
         {
-            KlineInterval s = KlineInterval.FifteenSeconds;
-            string ticker = cbTickers.SelectedItem.ToString();
 
-            DateTime startDate = DateTime.UtcNow;
-            DateTime endDate = DateTime.UtcNow;
-
-            
-
-            switch (cbResolutions.SelectedItem)
+            if (Program.path == "")
             {
-                case ("15s"):
-                    s = KlineInterval.FifteenSeconds;
-                    int seconds = -15 * quantity;
-                    startDate = startDate.AddSeconds(seconds);
-                    break;
-                case ("1m"):
-                    s = KlineInterval.OneMinute;
-                    int minutes = -quantity;
-                    startDate = startDate.AddMinutes(minutes);
-                    break;
-                case ("5m"):
-                    s = KlineInterval.FiveMinutes;
-                    int fives = -5 * quantity;
-                    startDate = startDate.AddMinutes(fives);
-                    break;
-                case ("15m"):
-                    s = KlineInterval.FifteenMinutes;
-                    int fifteens = -15 * quantity;
-                    startDate = startDate.AddMinutes(fifteens);
-                    break;
-                case ("1h"):
-                    s = KlineInterval.OneHour;
-                    int ones = -quantity;
-                    startDate = startDate.AddHours(ones);
-                    break;
-                case ("4h"):
-                    s = KlineInterval.FourHours;
-                    int fours = -4 * quantity;
-                    startDate = startDate.AddHours(fours);
-                    break;
-                case ("1d"):
-                    s = KlineInterval.OneDay;
-                    int days = -quantity;
-                    startDate = startDate.AddDays(days);
-                    break;
-                case ("1w"):
-                    s = KlineInterval.OneWeek;
-                    int weeks = -quantity;
-                    startDate = startDate.AddDays(weeks);
-                    break;
-                case ("1M"):
-                    s = KlineInterval.OneMonth;
-                    int months = -quantity;
-                    startDate = startDate.AddMonths(months);
-                    break;
+                MessageBox.Show("You didn't select the output database.", "FTX Parser", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            var result = client.GetKlinesAsync(ticker, s, startDate, endDate).Result; //MAX 1500 candles
-
-            var candles = result.Data;
+            else
+            {
+                ParseEverything(dateTimePicker1.Value);
+            }
         }
 
         private void crownNumeric1_ValueChanged(object sender, EventArgs e)
@@ -139,9 +89,9 @@ namespace FTXtoDB
             quantity = (int)crownNumeric1.Value;
         }
 
-        private async Task ParseEverything()
+        private async Task ParseEverything(DateTime? startDateParse)
         {
-            List<FTXKline> candles = new List<FTXKline>();
+            List<FTXKline> candles = new();
             //IEnumerable<FTXKline> result = new List<FTXKline>();
 
             bool run = true;
@@ -152,127 +102,120 @@ namespace FTXtoDB
             DateTime startDate = DateTime.UtcNow;
             DateTime endDate = DateTime.UtcNow;
 
-            var progress = new Progress<ProgressReport>();
-            int x = 0;
-            int totalPercent = 0;
+            Progress<ProgressReport> progress = new();
 
-            switch (cbResolutions.SelectedItem)
+            try
             {
-                case ("15s"):
-
-                    break;
-                case ("1m"):
-
-                    break;
-                case ("5m"):
-
-                    break;
-                case ("15m"):
-
-                    break;
-                case ("1h"):
-
-                    break;
-                case ("4h"):
-
-                    break;
-                case ("1d"):
-
-                    break;
-                case ("1w"):
-
-                    break;
-                case ("1M"):
-
-                    break;
-            }
-
-            while (run)
-            {
-                switch (cbResolutions.SelectedItem)
+                while (run)
                 {
-                    case ("15s"):
-                        s = KlineInterval.FifteenSeconds;
-                        int seconds = -15 * quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddSeconds(seconds);
-                        break;
-                    case ("1m"):
-                        s = KlineInterval.OneMinute;
-                        int minutes = -quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddMinutes(minutes);
-                        break;
-                    case ("5m"):
-                        s = KlineInterval.FiveMinutes;
-                        int fives = -5 * quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddMinutes(fives);
-                        break;
-                    case ("15m"):
-                        s = KlineInterval.FifteenMinutes;
-                        int fifteens = -15 * quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddMinutes(fifteens);
-                        break;
-                    case ("1h"):
-                        s = KlineInterval.OneHour;
-                        int ones = -quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddHours(ones);
-                        break;
-                    case ("4h"):
-                        s = KlineInterval.FourHours;
-                        int fours = -4 * quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddHours(fours);
-                        break;
-                    case ("1d"):
-                        s = KlineInterval.OneDay;
-                        int days = -quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddDays(days);
-                        break;
-                    case ("1w"):
-                        s = KlineInterval.OneWeek;
-                        int weeks = -quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddDays(weeks);
-                        break;
-                    case ("1M"):
-                        s = KlineInterval.OneMonth;
-                        int months = -quantity;
-                        endDate = startDate;
-                        startDate = startDate.AddMonths(months);
-                        break;
-                }
+                    switch (cbResolutions.SelectedItem)
+                    {
+                        case ("15s"):
+                            s = KlineInterval.FifteenSeconds;
+                            int seconds = -15 * quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddSeconds(seconds);
+                            break;
+                        case ("1m"):
+                            s = KlineInterval.OneMinute;
+                            int minutes = -quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddMinutes(minutes);
+                            break;
+                        case ("5m"):
+                            s = KlineInterval.FiveMinutes;
+                            int fives = -5 * quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddMinutes(fives);
+                            break;
+                        case ("15m"):
+                            s = KlineInterval.FifteenMinutes;
+                            int fifteens = -15 * quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddMinutes(fifteens);
+                            break;
+                        case ("1h"):
+                            s = KlineInterval.OneHour;
+                            int ones = -quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddHours(ones);
+                            break;
+                        case ("4h"):
+                            s = KlineInterval.FourHours;
+                            int fours = -4 * quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddHours(fours);
+                            break;
+                        case ("1d"):
+                            s = KlineInterval.OneDay;
+                            int days = -quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddDays(days);
+                            break;
+                        case ("1w"):
+                            s = KlineInterval.OneWeek;
+                            int weeks = -quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddDays(weeks);
+                            break;
+                        case ("1M"):
+                            s = KlineInterval.OneMonth;
+                            int months = -quantity;
+                            endDate = startDate;
+                            startDate = startDate.AddMonths(months);
+                            break;
+                    }
 
-                var result = client.GetKlinesAsync(ticker, s, startDate, endDate).Result; //MAX 1500 candles
 
-                if (result.Data.Count() == 0)
-                {
+
+                    var result = client.TradeApi.ExchangeData.GetKlinesAsync(ticker, s, startDate, endDate).Result; //MAX 1500 candles
                     
-                    run = false;
-                    var db = candles.OrderBy(o => o.StartTime);
-                    string name = ticker + cbResolutions.SelectedItem.ToString().ToUpper();
-                    ProcessData(db, name);
-                    labelProgress.Text = "Done!";
-                }
-                else
-                {
-                    //progress.PercentComplete = index++ * 100 / totalProcess;
-                    //progress.Report(progressReport);
-                    labelProgress.Text = "Working...";
-                    //progress.ProgressChanged += (o, report) => {
-                    //    labelProgress.Text = String.Format($"Processing...{report.PercentComplete}");
-                    //    progressBar1.Value = report.PercentComplete;
-                    //    progressBar1.Update();
-                    //};
+                    if (startDate < startDateParse)
+                    {
+                        result = client.TradeApi.ExchangeData.GetKlinesAsync(ticker, s, startDateParse, endDate).Result; //MAX 1500 candles
+                    }
 
-                    IEnumerable<FTXKline> ftxklines = result.Data.OrderByDescending(o => o.StartTime);
-                    var c = ftxklines.ToList();
-                    candles.AddRange(c);
+                    if (result.Data.Count() == 0)
+                    {
+                        run = false;
+                        var db = candles.OrderBy(o => o.OpenTime);
+                        string name = ticker + cbResolutions.SelectedItem.ToString().ToUpper();
+                        ProcessData(db, name);
+                        labelProgress.Text = "Done!";
+                        MessageBox.Show("Completed", "I successfully parsed all the candles you requested.", MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        //progress.PercentComplete = index++ * 100 / totalProcess;
+                        //progress.Report(progressReport);
+                        labelProgress.Text = "Working...";
+                        //progress.ProgressChanged += (o, report) => {
+                        //    labelProgress.Text = String.Format($"Processing...{report.PercentComplete}");
+                        //    progressBar1.Value = report.PercentComplete;
+                        //    progressBar1.Update();
+                        //};
+
+                        IEnumerable<FTXKline> ftxklines = result.Data.OrderByDescending(o => o.OpenTime);
+                        var c = ftxklines.ToList();
+                        candles.AddRange(c);
+                        if (startDateParse != null)
+                        {
+                            if (startDate < startDateParse)
+                            {
+                                var db = candles.OrderBy(o => o.OpenTime);
+                                string name = ticker + cbResolutions.SelectedItem.ToString().ToUpper();
+                                ProcessData(db, name);
+                                labelProgress.Text = "Done!";
+                                MessageBox.Show("I successfully parsed all the candles you requested.", "Completed", MessageBoxButtons.OK);
+                                break;
+                            }
+                        }
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"An error occurred.{e.Message}","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -301,9 +244,77 @@ namespace FTXtoDB
             //});
         }
 
-        private async void button2_Click(object sender, EventArgs e)
+        private void btnParseAll_Click(object sender, EventArgs e)
         {
-            ParseEverything();
+            if (Program.path == "")
+            {
+                MessageBox.Show("You didn't select the output database.", "FTX Parser", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                ParseEverything(null);
+            }
+        }
+
+        private void locateDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new();
+            fileDialog.ShowDialog();
+
+            if (!fileDialog.FileNames.FirstOrDefault().Contains(".db"))
+            {
+                MessageBox.Show("The selected file is not a .db file.\nPlease select .db.", "Not a database", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            else
+            {
+                Program.path = fileDialog.FileNames.FirstOrDefault();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var uno = MessageBox.Show("You just got TROLLED!🤌", "MEGALOL!", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if (uno == DialogResult.No)
+            {
+                var due = MessageBox.Show("You got yourself in this situation u you that right?!", "Whaaaat???😠", MessageBoxButtons.YesNo, MessageBoxIcon.Hand);
+                if (due == DialogResult.No)
+                {
+                    var tre = MessageBox.Show("Lol now whatever you press will switch off the pc", "F U 😠", MessageBoxButtons.YesNo, MessageBoxIcon.Hand);
+                    if (tre == DialogResult.Yes || tre == DialogResult.No)
+                    {
+                        Shutdown();
+                    }
+                }
+                else
+                {
+                    var tre = MessageBox.Show("I value your honesty more than your curiosity.\nKeep working!", "Good boy!", MessageBoxButtons.YesNo, MessageBoxIcon.Stop);
+                }
+            }
+            else
+            {
+                var due = MessageBox.Show("I value your honesty more than your curiosity.\nKeep working!", "Good boy!", MessageBoxButtons.YesNo, MessageBoxIcon.Stop);
+            }
+        }
+
+        void Shutdown()
+        {
+            ManagementBaseObject mboShutdown = null;
+            ManagementClass mcWin32 = new ManagementClass("Win32_OperatingSystem");
+            mcWin32.Get();
+
+            // You can't shutdown without security privileges
+            mcWin32.Scope.Options.EnablePrivileges = true;
+            ManagementBaseObject mboShutdownParams =
+                     mcWin32.GetMethodParameters("Win32Shutdown");
+
+            // Flag 1 means we want to shut down the system. Use "2" to reboot.
+            mboShutdownParams["Flags"] = "1";
+            mboShutdownParams["Reserved"] = "0";
+            foreach (ManagementObject manObj in mcWin32.GetInstances())
+            {
+                mboShutdown = manObj.InvokeMethod("Win32Shutdown",
+                                               mboShutdownParams, null);
+            }
         }
     }
 }
