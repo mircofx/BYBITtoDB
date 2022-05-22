@@ -182,7 +182,7 @@ namespace FTXtoDB
                         string name = ticker + cbResolutions.SelectedItem.ToString().ToUpper();
                         ProcessData(db, name);
                         labelProgress.Text = "Done!";
-                        MessageBox.Show("Completed", "I successfully parsed all the candles you requested.", MessageBoxButtons.OK);
+                        MessageBox.Show("I successfully parsed all the candles you requested.", "Completed", MessageBoxButtons.OK);
                     }
                     else
                     {
