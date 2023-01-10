@@ -7,13 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using FTX.Net.Objects.Models;
+using Bybit.Net.Objects.Models;
 
-namespace FTXtoDB
+namespace BybittoDB
 {
     public class SQLiteDataAccess
     {
-        public static void SaveCandles(FTXKline kline, string Ticker)
+        public static void SaveCandles(BybitKline kline, string Ticker)
         {
             using IDbConnection cnn = new SQLiteConnection(LoadConnectionString());
 
@@ -24,7 +24,7 @@ namespace FTXtoDB
         }
 
 
-        public static void BulkInsert(IOrderedEnumerable<FTXKline> data, string Ticker)
+        public static void BulkInsert(IOrderedEnumerable<BybitKline> data, string Ticker)
         {
             try
             {

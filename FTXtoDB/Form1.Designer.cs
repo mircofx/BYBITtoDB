@@ -1,4 +1,4 @@
-﻿namespace FTXtoDB
+﻿namespace BybittoDB
 {
     partial class Form1
     {
@@ -112,7 +112,7 @@
             this.crownNumeric1.TabIndex = 9;
             this.crownNumeric1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.crownNumeric1.Value = new decimal(new int[] {
-            500,
+            200,
             0,
             0,
             0});
@@ -227,7 +227,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.ShowIcon = false;
-            this.Text = "FTX to Database Tool";
+            this.Text = "Bybit to Database Tool";
             ((System.ComponentModel.ISupportInitialize)(this.crownNumeric1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

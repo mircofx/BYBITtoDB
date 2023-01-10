@@ -1,19 +1,19 @@
-﻿using CryptoExchange.Net.Authentication;
-using FTX.Net.Clients;
-using FTX.Net.Enums;
-using FTX.Net.Objects;
-using FTX.Net.Objects.Models;
+﻿using Bybit.Net.Clients;
+using Bybit.Net.Enums;
+using Bybit.Net.Objects;
+using Bybit.Net.Objects.Models;
+using CryptoExchange.Net.Authentication;
 using System.Data;
 using System.Linq;
 using System.Management;
 using System.Security;
-using static FTXtoDB.SQLiteDataAccess;
+using static BybittoDB.SQLiteDataAccess;
 
-namespace FTXtoDB
+namespace BybittoDB
 {
     public partial class Form1 : Form
     {
-        public static FTXClient? client;
+        public static BybitClient? client;
         public static int quantity;
         public Form1()
         {
@@ -21,14 +21,14 @@ namespace FTXtoDB
 
             ResolutionPopulate();
 
-            Tuple<SecureString, SecureString> keys = EncryptCredentials("eHSSX-fZJQSv4bLX53tQUAsLrCJl-9Zpo87RKSS9", "L7Xe7q5mf5W0Wj8DAdQtiAEhbDvrq3ZsY-4OAIXB");
+            Tuple<SecureString, SecureString> keys = EncryptCredentials("VBXQYZOEZBIJCTQABS", "USRVQOXBSFNKRPXHSJKGWNDSZIGVNRGZDEQG");
 
-            client = new(new FTXClientOptions()
+            client = new(new BybitClientOptions()
             {
-                ApiCredentials = new ApiCredentials(keys.Item1, keys.Item2),
-                SubaccountName = "Gold",
-                AffiliateCode = "BullBots",
-                AutoTimestamp = false
+                UsdPerpetualApiOptions = new() 
+                {
+                    ApiCredentials = new ApiCredentials(keys.Item1, keys.Item2)
+                }
             });
 
             quantity = (int)crownNumeric1.Value;
@@ -36,9 +36,9 @@ namespace FTXtoDB
             GetListInstruments(client);
         }
 
-        public void GetListInstruments(FTXClient client)
+        public void GetListInstruments(BybitClient client)
         {
-            var list = client.TradeApi.ExchangeData.GetFuturesAsync().Result.Data;
+            var list = client.UsdPerpetualApi.ExchangeData.GetSymbolsAsync().Result.Data;
 
             List<string> tickers = list.Select(s => s.Name).ToList();
 
@@ -76,7 +76,7 @@ namespace FTXtoDB
 
             if (Program.path == "")
             {
-                MessageBox.Show("You didn't select the output database.", "FTX Parser", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("You didn't select the output database.", "Bybit Parser", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -91,12 +91,13 @@ namespace FTXtoDB
 
         private async Task ParseEverything(DateTime? startDateParse)
         {
-            List<FTXKline> candles = new();
-            //IEnumerable<FTXKline> result = new List<FTXKline>();
+            List<BybitKline> candles = new();
+            //IEnumerable<BybitKline> result = new List<BybitKline>();
 
             bool run = true;
 
-            KlineInterval s = KlineInterval.FifteenSeconds;
+            //KlineInterval s = KlineInterval.FifteenSeconds;
+            KlineInterval s = KlineInterval.OneMinute;
             string ticker = cbTickers.SelectedItem.ToString();
 
             DateTime startDate = DateTime.UtcNow;
@@ -110,12 +111,12 @@ namespace FTXtoDB
                 {
                     switch (cbResolutions.SelectedItem)
                     {
-                        case ("15s"):
-                            s = KlineInterval.FifteenSeconds;
-                            int seconds = -15 * quantity;
-                            endDate = startDate;
-                            startDate = startDate.AddSeconds(seconds);
-                            break;
+                        //case ("15s"):
+                        //    s = KlineInterval.FifteenSeconds;
+                        //    int seconds = -15 * quantity;
+                        //    endDate = startDate;
+                        //    startDate = startDate.AddSeconds(seconds);
+                        //    break;
                         case ("1m"):
                             s = KlineInterval.OneMinute;
                             int minutes = -quantity;
@@ -168,11 +169,11 @@ namespace FTXtoDB
 
 
 
-                    var result = client.TradeApi.ExchangeData.GetKlinesAsync(ticker, s, startDate, endDate).Result; //MAX 1500 candles
+                    var result = Task.Run(async() => await client.UsdPerpetualApi.ExchangeData.GetKlinesAsync(ticker, s, startDate)).Result; //MAX 1500 candles
                     
                     if (startDate < startDateParse)
                     {
-                        result = client.TradeApi.ExchangeData.GetKlinesAsync(ticker, s, startDateParse, endDate).Result; //MAX 1500 candles
+                        result = Task.Run(async () => await client.UsdPerpetualApi.ExchangeData.GetKlinesAsync(ticker, s, startDate)).Result; //MAX 1500 candles
                     }
 
                     if (result.Data.Count() == 0)
@@ -195,7 +196,7 @@ namespace FTXtoDB
                         //    progressBar1.Update();
                         //};
 
-                        IEnumerable<FTXKline> ftxklines = result.Data.OrderByDescending(o => o.OpenTime);
+                        IEnumerable<BybitKline> ftxklines = result.Data.OrderByDescending(o => o.OpenTime);
                         var c = ftxklines.ToList();
                         candles.AddRange(c);
                         if (startDateParse != null)
@@ -227,7 +228,7 @@ namespace FTXtoDB
         //}
         
 
-        private void ProcessData(IOrderedEnumerable<FTXKline> list, string ticker)
+        private void ProcessData(IOrderedEnumerable<BybitKline> list, string ticker)
         {
             BulkInsert(list, ticker);
 
@@ -248,7 +249,7 @@ namespace FTXtoDB
         {
             if (Program.path == "")
             {
-                MessageBox.Show("You didn't select the output database.", "FTX Parser", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("You didn't select the output database.", "Bybit Parser", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {

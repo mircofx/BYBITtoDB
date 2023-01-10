@@ -1,4 +1,4 @@
-namespace FTXtoDB
+namespace BybittoDB
 {
     internal static class Program
     {
