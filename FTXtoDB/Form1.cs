@@ -107,6 +107,8 @@ namespace BybittoDB
 
             try
             {
+                DateTime lastTime = DateTime.Now;
+
                 while (run)
                 {
                     switch (cbResolutions.SelectedItem)
@@ -167,7 +169,7 @@ namespace BybittoDB
                             break;
                     }
 
-
+                    dateTimePicker1.Value = startDate;
 
                     var result = Task.Run(async() => await client.UsdPerpetualApi.ExchangeData.GetKlinesAsync(ticker, s, startDate)).Result; //MAX 1500 candles
                     
@@ -176,7 +178,9 @@ namespace BybittoDB
                         result = Task.Run(async () => await client.UsdPerpetualApi.ExchangeData.GetKlinesAsync(ticker, s, startDate)).Result; //MAX 1500 candles
                     }
 
-                    if (result.Data.Count() == 0)
+                    DateTime newTime = result.Data.OrderBy(o => o.OpenTime).First().OpenTime;
+
+                    if (result.Data.Count() == 0 || newTime == lastTime)
                     {
                         run = false;
                         var db = candles.OrderBy(o => o.OpenTime);
@@ -187,6 +191,8 @@ namespace BybittoDB
                     }
                     else
                     {
+                        lastTime = newTime;
+
                         //progress.PercentComplete = index++ * 100 / totalProcess;
                         //progress.Report(progressReport);
                         labelProgress.Text = "Working...";
