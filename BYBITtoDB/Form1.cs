@@ -195,15 +195,15 @@ namespace BybittoDB
 
                         //progress.PercentComplete = index++ * 100 / totalProcess;
                         //progress.Report(progressReport);
-                        labelProgress.Text = "Working...";
+                        labelProgress.Text = $"Working...";
                         //progress.ProgressChanged += (o, report) => {
                         //    labelProgress.Text = String.Format($"Processing...{report.PercentComplete}");
                         //    progressBar1.Value = report.PercentComplete;
                         //    progressBar1.Update();
                         //};
 
-                        IEnumerable<BybitKline> ftxklines = result.Data.OrderByDescending(o => o.OpenTime);
-                        var c = ftxklines.ToList();
+                        IEnumerable<BybitKline> BYBITklines = result.Data.OrderByDescending(o => o.OpenTime);
+                        var c = BYBITklines.ToList();
                         candles.AddRange(c);
                         if (startDateParse != null)
                         {

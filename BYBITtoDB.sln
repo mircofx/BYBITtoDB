@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BybittoDB", "FTXtoDB\BybittoDB.csproj", "{1559988F-DF72-434D-974B-889493F2DEF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BYBITtoDB", "BYBITtoDB\BYBITtoDB.csproj", "{1559988F-DF72-434D-974B-889493F2DEF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.cbResolutions = new ReaLTaiizor.Controls.CrownComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cbTickers = new ReaLTaiizor.Controls.CrownComboBox();
@@ -37,7 +38,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.btnParseAll = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.labelProgress = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.locateDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,7 +85,7 @@
             // btnParseDate
             // 
             this.btnParseDate.BackColor = System.Drawing.Color.LightSalmon;
-            this.btnParseDate.Location = new System.Drawing.Point(630, 233);
+            this.btnParseDate.Location = new System.Drawing.Point(640, 168);
             this.btnParseDate.Name = "btnParseDate";
             this.btnParseDate.Size = new System.Drawing.Size(131, 23);
             this.btnParseDate.TabIndex = 8;
@@ -141,7 +141,7 @@
             // btnParseAll
             // 
             this.btnParseAll.BackColor = System.Drawing.Color.Lime;
-            this.btnParseAll.Location = new System.Drawing.Point(356, 233);
+            this.btnParseAll.Location = new System.Drawing.Point(366, 168);
             this.btnParseAll.Name = "btnParseAll";
             this.btnParseAll.Size = new System.Drawing.Size(131, 23);
             this.btnParseAll.TabIndex = 12;
@@ -149,18 +149,11 @@
             this.btnParseAll.UseVisualStyleBackColor = false;
             this.btnParseAll.Click += new System.EventHandler(this.btnParseAll_Click);
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(21, 182);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(750, 23);
-            this.progressBar1.TabIndex = 13;
-            // 
             // labelProgress
             // 
             this.labelProgress.AutoSize = true;
             this.labelProgress.ForeColor = System.Drawing.SystemColors.Control;
-            this.labelProgress.Location = new System.Drawing.Point(373, 148);
+            this.labelProgress.Location = new System.Drawing.Point(345, 132);
             this.labelProgress.Name = "labelProgress";
             this.labelProgress.Size = new System.Drawing.Size(68, 15);
             this.labelProgress.TabIndex = 14;
@@ -186,7 +179,7 @@
             // button3
             // 
             this.button3.BackColor = System.Drawing.Color.Gold;
-            this.button3.Location = new System.Drawing.Point(493, 233);
+            this.button3.Location = new System.Drawing.Point(503, 168);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(131, 23);
             this.button3.TabIndex = 16;
@@ -209,11 +202,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(800, 278);
+            this.ClientSize = new System.Drawing.Size(800, 204);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.labelProgress);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.btnParseAll);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -224,6 +216,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cbResolutions);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.ShowIcon = false;
@@ -249,7 +242,6 @@
         private Label label3;
         private Label label4;
         private Button btnParseAll;
-        private ProgressBar progressBar1;
         private Label labelProgress;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem locateDatabaseToolStripMenuItem;
